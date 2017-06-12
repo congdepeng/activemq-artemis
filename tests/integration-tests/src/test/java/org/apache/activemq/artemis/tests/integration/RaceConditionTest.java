@@ -25,6 +25,7 @@ public class RaceConditionTest extends ActiveMQTestBase {
     @Test
     public void raceConditionTest() throws Exception {
         Server clientServer = new Server();
+        clientServer.init();
         clientServer.start();
 
         Client client = new Client();
@@ -62,7 +63,7 @@ public class RaceConditionTest extends ActiveMQTestBase {
             factory1 = locator.createSessionFactory();
             session1 = factory1.createSession();
 
-            session1.createTemporaryQueue(clientQueue, RoutingType.MULTICAST, clientQueue);
+            session1.createQueue(clientQueue, RoutingType.MULTICAST, clientQueue, true);
             producer = session1.createProducer(serverQueue);
 
             session1.start();
@@ -91,6 +92,7 @@ public class RaceConditionTest extends ActiveMQTestBase {
 
         public void stop() {
             try {
+                session1.deleteQueue(clientQueue);
                 factory1.close();
                 factory2.close();
 
@@ -109,7 +111,7 @@ public class RaceConditionTest extends ActiveMQTestBase {
         ClientConsumer consumer;
         ActiveMQServer server;
 
-        public void start() throws Exception {
+        public void init() throws Exception {
             Configuration config = createDefaultNettyConfig();
             CoreQueueConfiguration queueConfig = new CoreQueueConfiguration();
             queueConfig.setAddress(serverQueue);
@@ -117,6 +119,9 @@ public class RaceConditionTest extends ActiveMQTestBase {
             queueConfig.setDurable(false);
             config.addQueueConfiguration(queueConfig);
             server = createServer(false, config);
+        }
+
+        public void start() throws Exception {
             server.start();
 
             TransportConfiguration transport = new TransportConfiguration(NETTY_CONNECTOR_FACTORY);
