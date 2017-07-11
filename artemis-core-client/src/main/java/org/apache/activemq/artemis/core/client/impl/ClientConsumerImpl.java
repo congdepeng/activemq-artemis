@@ -1014,10 +1014,6 @@ public final class ClientConsumerImpl implements ClientConsumerInternal {
                if (logger.isTraceEnabled()) {
                   logger.trace(this + "::Handler.onMessage done");
                }
-
-               if (message.isLargeMessage()) {
-                  message.discardBody();
-               }
             } else {
                session.expire(this, message);
             }
