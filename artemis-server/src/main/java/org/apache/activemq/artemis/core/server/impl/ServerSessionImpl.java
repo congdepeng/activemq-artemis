@@ -1319,10 +1319,6 @@ public class ServerSessionImpl implements ServerSession, FailureListener {
          message.setMessageID(id);
       }
 
-      if (server.getConfiguration().isPopulateValidatedUser() && validatedUser != null) {
-         message.setValidatedUserID(validatedUser);
-      }
-
       SimpleString address = message.getAddressSimpleString();
 
       if (defaultAddress == null && address != null) {
@@ -1660,6 +1656,10 @@ public class ServerSessionImpl implements ServerSession, FailureListener {
             tx.markAsRollbackOnly(e);
          }
          throw e;
+      }
+
+      if (server.getConfiguration().isPopulateValidatedUser() && validatedUser != null) {
+         msg.setValidatedUserID(validatedUser);
       }
 
       if (tx == null || autoCommitSends) {
